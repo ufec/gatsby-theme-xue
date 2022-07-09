@@ -1,0 +1,5 @@
+items:
+  - title: nav标题1
+    to: /nav链接1
+  - title: nav标题2
+    to: /nav链接2
