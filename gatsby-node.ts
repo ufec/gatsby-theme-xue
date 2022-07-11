@@ -132,9 +132,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
     if (queryAllPostData.errors || !queryAllPostData.data) {
       throw Error(queryAllPostData.errors);
     }
-    const postPerPage = 9; // 首页每页显示的博文数
-    const numPostPages = Math.ceil(blogNodes.length / postPerPage); // 首页总页数
-
+    let totalArchives = 0;
     // 遍历所有文章
     queryAllPostData.data.allMarkdownRemark.edges.forEach((edge) => {
       // 为每篇博文创建一个页面并构造context上下文
@@ -148,8 +146,13 @@ export const createPages: GatsbyNode["createPages"] = async ({
           next: edge.next,
         },
       });
+      totalArchives++;
       reporter.success(`create page for ${edge.node.frontmatter.title} slug: ${edge.node.fields.slug}`);
     });
+    const postPerPage = 9; // 首页每页显示的博文数
+    // blogNodes.length || totalArchives 由于是异步的 blogNodes 可能还未构建完成 totalArchives 跟 blogNodes.length 是一样的
+    const numPostPages = Math.ceil(blogNodes.length || totalArchives / postPerPage); // 首页总页数
+    reporter.success(`you have ${numPostPages} articles`);
     // 构造首页分页
     for (let i = 1; i <= numPostPages; i++) {
       createPage({
